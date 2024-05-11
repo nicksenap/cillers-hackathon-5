@@ -10,6 +10,5 @@ export const renderDocumentAsStaticHtml = (documentProps: {
 }): string => {
   const element = React.createElement(DocumentRendered, documentProps);
   const renderedHtml = ReactDOMServer.renderToStaticMarkup(element);
-  console.log(renderedHtml);
   return renderedHtml;
 };

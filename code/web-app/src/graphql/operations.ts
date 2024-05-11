@@ -82,17 +82,17 @@ export const GET_SIGNATURES = gql`
         email
         checksum
       }
-      signed_by_email
-      signed_content
-      signed_checksum
-      signed_ts
+      signedByEmail
+      signedContent
+      signedChecksum
+      signedTs
     }
   }
 `;
 
 export const VERIFY_SIGNATURE = gql`
-  query VerifySignature($signature_id: String!) {
-    verifySignature(signature_id: $signature_id) {
+  query VerifySignature($id: String!) {
+    verifySignature(id: $id) {
       id
       document {
         id
@@ -103,10 +103,10 @@ export const VERIFY_SIGNATURE = gql`
         email
         checksum
       }
-      signed_by_email
-      signed_content
-      signed_checksum
-      signed_ts
+      signedByEmail
+      signedContent
+      signedChecksum
+      signedTs
     }
   }
 `;

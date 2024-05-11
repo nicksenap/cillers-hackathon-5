@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Main from './pages/Main';
 import AuthCallback from './pages/AuthCallback';
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import Management from './pages/Management';
 
 const isDev = process.env.NODE_ENV === 'development';
 

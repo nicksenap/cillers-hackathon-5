@@ -39,6 +39,7 @@ class Template:
     id: str
     name: str
     fields: list[Field]
+    template: str
 
 def create_signature(document_id: str, signed_by_email: str, signed_content: str) -> Signature:
     id = str(uuid.uuid1())
@@ -79,14 +80,14 @@ def create_field(name: str, type: str) -> Field:
                          data={'name': name, 'type': type}))
     return Field(id=id, name=name, type=type)
 
-def create_template(name: str, field_ids: list[str]) -> Template:
+def create_template(name: str, template: str, field_ids: list[str]) -> Template:
     id = str(uuid.uuid1())
     cb.insert(env.get_couchbase_conf(),
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='templates',
                          key=id,
-                         data={'name': name, 'field_ids': field_ids}))
-    return Template(id=id, name=name, fields=[get_field(id) for id in field_ids])
+                         data={'name': name, 'field_ids': field_ids, 'template': template}))
+    return Template(id=id, name=name, template=template, fields=[get_field(id) for id in field_ids])
 
 def list_documents() -> list[Document]:
     result = cb.exec(
@@ -183,9 +184,15 @@ def delete_template(id: str) -> None:
 def list_templates() -> list[Template]:
     result = cb.exec(
         env.get_couchbase_conf(),
-        f"SELECT name, fields, META().id FROM {env.get_couchbase_bucket()}._default.templates"
+        f"SELECT name, field_ids, template, META().id as id FROM {env.get_couchbase_bucket()}._default.templates"
     )
-    return [Template(**r) for r in result]
+    templates = []
+    for r in result:
+        field_ids = r.get('field_ids', [])
+        print(field_ids)
+        fields = [get_field(field_id) for field_id in field_ids]  # Ensure this returns a list of Field objects
+        templates.append(Template(id=r['id'], name=r['name'], fields=fields, template=r['template']))
+    return templates
 
 def get_product(id: str) -> Product | None:
     if doc := cb.get(env.get_couchbase_conf(),

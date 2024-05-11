@@ -41,18 +41,23 @@ const Management: React.FC = () => {
     useEffect(() => {
         if (loading) {
             console.log('Loading signatures...');
-        } else if (templateLoading) {
-            console.log('Loading templates...');
-        } else if (error){
+        } else if (error) {
             console.error('Error fetching signatures:', error);
-        } else if (templateError) {
-            console.error('Error fetching templates:', templateError);
         } else if (data) {
             setSignatures(data.signatures);
+        }
+    }, [data, loading, error]);
+
+    useEffect(() => {
+        if (templateLoading) {
+            console.log('Loading templates...');
+        } else if (templateError) {
+            console.error('Error fetching templates:', templateError);
         } else if (templateData) {
+            console.log("Template data:", templateData);
             setTemplates(templateData.templates);
         }
-    }, [data, loading, error, templateData, templateLoading, templateError]);
+    }, [templateData, templateLoading, templateError]);
 
     const handleIntegrityCheck = async (signature: Signature) => {
         // Placeholder for integrity check logic
@@ -72,7 +77,7 @@ const Management: React.FC = () => {
             <ToastContainer />
             <div className="navbar bg-base-300 text-neutral-content">
                 <div className="flex-1">
-                <a href="/" className="p-2 normal-case text-xl">Management</a>
+                <a href="/" className="p-2 normal-case text-xl text-black">Management</a>
                 </div>
             </div>
 
@@ -124,10 +129,10 @@ const Management: React.FC = () => {
                 ) : (
                     <div>
                         {templates.map((template) => (
-                            <div key={template.id}>
-                                <p>{template.name}</p>
-                                <p>{template.template}</p>
-                                <p>{template.fieldIds.join(', ')}</p>
+                            <div key={template.id} className="mb-4">
+                                <h3 className="text-xl font-semibold">{template.name}</h3>
+                                <textarea className="textarea textarea-bordered w-full mt-4" defaultValue={template.template}></textarea>
+                                <button className="btn mt-2" onClick={() => {}}>Save</button>
                             </div>
                         ))}
                     </div>

@@ -76,7 +76,7 @@ const Documents: React.FC = () => {
       
       <div className="navbar bg-base-300 text-neutral-content">
         <div className="flex-1">
-          <a href="/" className="p-2 normal-case text-xl">Form</a>
+          <a href="/" className="p-2 normal-case text-xl text-black">Form</a>
         </div>
       </div>
       <div className="flex flex-grow justify-center items-center bg-neutral">

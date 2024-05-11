@@ -140,3 +140,18 @@ export const ADD_TEMPLATE = gql`
   }
 `;
 
+export const GET_TEMPLATES = gql`
+  query Templates {
+    templates {
+        id
+        name
+        template
+        fields {
+            id
+            name
+            type
+        }
+    }
+  }
+`;
+

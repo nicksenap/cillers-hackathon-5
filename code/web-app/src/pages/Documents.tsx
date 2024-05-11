@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { ADD_DOCUMENT, SIGN_DOCUMENT } from '../graphql/operations';
+import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { ADD_DOCUMENT, SIGN_DOCUMENT, GET_TEMPLATES } from '../graphql/operations';
 import { renderDocumentAsStaticHtml } from '../utils/staticRenderHandler';
 import DocumentRendered from '../templates/DocumentRendered';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Template } from '../types';
 
 
 const Documents: React.FC = () => {
@@ -16,29 +17,22 @@ const Documents: React.FC = () => {
   const [content, setContent] = useState('');
   const [addDocument] = useMutation(ADD_DOCUMENT);
   const [signDocument] = useMutation(SIGN_DOCUMENT);
+  const [template, setTemplate] = useState<Template | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const { data, loading, error } = useQuery(GET_TEMPLATES);
 
-  // const handleAddProduct = async () => {
-  //   if (!newProductText.trim()) return;
-  //   if (pushToKafka) {
-  //     const response = await fetch('/input/add_product', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ name: newProductText }),
-  //     });
-  //     if (response.ok) {
-  //       setNewProductText('');
-  //     } else {
-  //       const errorText = await response.text();
-  //       console.error('Failed to add product:', errorText);
-  //     }
-  //   } else {
-  //     await addProduct({ variables: { name: newProductText } });
-  //     setNewProductText('');
-  //   }
-  // };
+  useEffect(() => {
+    console.log('Fetching templates...');
+    
+    if (loading) {
+      console.log('Loading templates...');
+    } else if (error) {
+      console.error('Error fetching templates:', error);
+    } else if (data) {
+      console.log(data);
+      setTemplate(data.templates[0]);
+    }
+  }, [data, loading, error]);
 
   const handleAddDocument = async (staticHtml: string) => {
     if (!name || !firstName || !lastName || !email ) {
@@ -59,7 +53,8 @@ const Documents: React.FC = () => {
   }
 
   const renderDocument = async () => {
-    const staticHtml = renderDocumentAsStaticHtml({ name, first_name: firstName, last_name: lastName, email });
+    const kv = { name, first_name: firstName, last_name: lastName, email };
+    const staticHtml = renderDocumentAsStaticHtml({ kv, template: template!});
     await handleAddDocument(staticHtml);
   }
 
@@ -73,7 +68,8 @@ const Documents: React.FC = () => {
     if(response.data){toast.success('Successfully signed!');}
     else {toast.error('Failed to sign!');}
   }
-
+  const fields = template?.fields || [];
+  console.log(fields);
   return (
     <div className="min-h-screen flex flex-col">
       <ToastContainer />
@@ -83,8 +79,6 @@ const Documents: React.FC = () => {
           <a href="/" className="p-2 normal-case text-xl">Form</a>
         </div>
       </div>
-
-
       <div className="flex flex-grow justify-center items-center bg-neutral">
         <div className="card card-compact w-full max-w-lg bg-base-100 shadow-xl">
           <div className="card-body items-stretch text-center">
@@ -134,10 +128,8 @@ const Documents: React.FC = () => {
                 <h1 className="card-title self-center text-2xl font-bold mb-4">Form Preview</h1>
                 <div className="document-content mb-5">
                   <DocumentRendered
-                    name={name}
-                    first_name={firstName}
-                    last_name={lastName}
-                    email={email}
+                    kv={{ name, first_name: firstName, last_name: lastName, email }}
+                    template={template!}
                   />
                 </div>
                 <button className="btn btn-primary w-full" onClick={handleSignDocument}>

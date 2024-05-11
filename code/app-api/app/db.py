@@ -189,7 +189,6 @@ def list_templates() -> list[Template]:
     templates = []
     for r in result:
         field_ids = r.get('field_ids', [])
-        print(field_ids)
         fields = [get_field(field_id) for field_id in field_ids]  # Ensure this returns a list of Field objects
         templates.append(Template(id=r['id'], name=r['name'], fields=fields, template=r['template']))
     return templates

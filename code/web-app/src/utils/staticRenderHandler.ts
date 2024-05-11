@@ -1,14 +1,13 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import DocumentRendered from '../templates/DocumentRendered';
+import { Template } from '../types';
 
 export const renderDocumentAsStaticHtml = (documentProps: {
-  name: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+    kv: Record<string, string>;
+    template: Template;
 }): string => {
-  const element = React.createElement(DocumentRendered, documentProps);
-  const renderedHtml = ReactDOMServer.renderToStaticMarkup(element);
-  return renderedHtml;
+    const element = React.createElement(DocumentRendered, documentProps);
+    const renderedHtml = ReactDOMServer.renderToStaticMarkup(element);
+    return renderedHtml;
 };

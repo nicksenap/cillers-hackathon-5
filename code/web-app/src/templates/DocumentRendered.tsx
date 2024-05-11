@@ -1,20 +1,33 @@
+import { Template } from "../types";
+
 interface DocumentRenderedProps {
-    name: string;
-    first_name: string;
-    last_name: string;
-    email: string;
+    kv: Record<string, string>;
+    template: Template;
 }
 
-const DocumentRendered: React.FC<DocumentRenderedProps> = ({ name, first_name, last_name, email }) => {
-  return (
-    <div>
-      <h1>Super Awesome Document - {name}</h1>
-      <p>First Name: {first_name}</p>
-      <p>Last Name: {last_name}</p>
-      <p>Email: {email}</p>
-    </div>
-  );
-};
+
+const DocumentRendered: React.FC<DocumentRenderedProps> = ({ kv, template }) => {
+    const renderTemplate = (): string => {
+      const replacements: { [key: string]: string } = kv;
+      console.log('Replacement object:', replacements);
+      console.log('Template:', template.template);
+      return template.template.replace(/\{(.*?)\}/g, (_, key) => {
+        const trimmedKey = key.trim();
+        console.log('Current key being replaced:', trimmedKey);
+  
+        // Handle the case where the key is not found in the replacements object
+        if (trimmedKey in replacements) {
+          return replacements[trimmedKey];
+        } else {
+          console.error(`Key '${trimmedKey}' not found in replacements`);
+          return `{{${trimmedKey}}}`; // Optionally return the original placeholder or a default value
+        }
+      });
+    };
+  
+    return (
+      <div dangerouslySetInnerHTML={{ __html: renderTemplate() }} />
+    );
+  };
 
 export default DocumentRendered;
-

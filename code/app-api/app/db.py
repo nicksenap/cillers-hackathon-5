@@ -37,8 +37,8 @@ def create_signature(document_id: str, signed_by_email: str, signed_content: str
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='signatures',
                          key=id,
-                         data={'document_id': document_id, 'signed_by_email': signed_by_email, 'signed_checksum': checksum, 'signed_ts': ts}))
-    return Signature(id=id, document=get_document(document_id), signed_by_email=signed_by_email, signed_checksum=checksum, signed_ts=ts)
+                         data={'document_id': document_id, 'signed_by_email': signed_by_email, 'signed_content': signed_content, 'signed_checksum': checksum, 'signed_ts': ts}))
+    return Signature(id=id, document=get_document(document_id), signed_by_email=signed_by_email, signed_content=signed_content, signed_checksum=checksum, signed_ts=ts)
 
 def create_product(name: str) -> Product:
     id = str(uuid.uuid1())

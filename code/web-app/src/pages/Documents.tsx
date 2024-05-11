@@ -1,53 +1,17 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_DOCUMENT } from '../graphql/operations';
+import { renderDocumentAsStaticHtml } from '../utils/staticRenderHandler';
+import DocumentRendered from '../templates/DocumentRendered';
 
-interface Document {
-  id: string;
-  name: string;
-  content: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
-
-// interface GetDocumentsQuery {
-//   documents: Document[];
-// }
 
 const Documents: React.FC = () => {
+  const [name, setName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  // const { data, loading, error, subscribeToMore } = useQuery(GET_PRODUCTS);
   const [addDocument] = useMutation(ADD_DOCUMENT);
-
-  // useEffect(() => {
-  //   subscribeToMore({
-  //     document: PRODUCT_ADDED_SUBSCRIPTION,
-  //     updateQuery: (prev, { subscriptionData }) => {
-  //       if (!subscriptionData.data) return prev;
-  //       const newProduct = subscriptionData.data.productAdded;
-
-  //       if (prev.products.some((product: Product) => product.id === newProduct.id)) {
-  //         return prev;
-  //       }
-  //       return Object.assign({}, prev, {
-  //         products: [...prev.products, newProduct]
-  //       });
-  //     },
-  //   });
-  // }, [subscribeToMore]);
-
-  // if (loading) return (
-  //   <div className="flex justify-center items-center min-h-screen bg-base-300">
-  //     <button className="btn">
-  //       <span className="loading loading-spinner"></span>
-  //       Loading...
-  //     </button>
-  //   </div>
-  // );
-  // if (error) return <p>{'Error: ' + error}</p>;
+  const [showPreview, setShowPreview] = useState(false);
 
   // const handleAddProduct = async () => {
   //   if (!newProductText.trim()) return;
@@ -71,21 +35,25 @@ const Documents: React.FC = () => {
   //   }
   // };
 
-  const handleAddDocument = async () => {
-    if (!firstName || !lastName || !email) {
+  const handleAddDocument = async (staticHtml: string) => {
+    if (!name || !firstName || !lastName || !email ) {
       // Handle validation or error message here
       return;
     }
     await addDocument({ variables: { 
-      name: 'Test Document',
-      content: 'This is a test document',
+      name: name,
       first_name: firstName,
       last_name: lastName,
       email: email,
+      content: staticHtml
     } });
-    setFirstName('');
-    setLastName('');
-    setEmail('');
+
+    setShowPreview(true);
+  }
+
+  const renderDocument = async () => {
+    const staticHtml = renderDocumentAsStaticHtml({ name, first_name: firstName, last_name: lastName, email });
+    await handleAddDocument(staticHtml);
   }
 
   return (
@@ -102,6 +70,15 @@ const Documents: React.FC = () => {
           <div className="card-body items-stretch text-center">
             <h1 className="card-title self-center text-2xl font-bold mb-4">Start a new form</h1>
             <div className="form-control w-full">
+            <div className="form-control">
+                <input
+                  type="text"
+                  placeholder="Form Name"
+                  className="input input-bordered input-md input-primary w-full mb-2"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
               <div className="form-control">
                 <input
                   type="text"
@@ -128,17 +105,31 @@ const Documents: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-              </div>
-              <div className="form-control">
-                <button className="btn btn-primary w-full" onClick={handleAddDocument}>
-                  Start
+              <button className="btn btn-primary w-full mb-5" onClick={renderDocument}>
+                  Generate
+              </button>
+            </div>
+            {showPreview && (
+              <div className="form-control w-full mb-5 p5">
+                <h1 className="card-title self-center text-2xl font-bold mb-4">Form Preview</h1>
+                <div className="document-content mb-5">
+                  <DocumentRendered
+                    name={name}
+                    first_name={firstName}
+                    last_name={lastName}
+                    email={email}
+                  />
+                </div>
+                <button className="btn btn-primary w-full">
+                  Sign
                 </button>
               </div>
-            </div>
-          </div>
+            )}
         </div>
       </div>
     </div>
+  </div>
+</div>
   );
 };
 

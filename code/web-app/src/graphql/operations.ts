@@ -38,7 +38,7 @@ export const GET_DOCUMENTS = gql`
 
 export const ADD_DOCUMENT = gql`
   mutation AddDocument($name: String!, $content: String!,$first_name: String!, $last_name: String!, $email: String!) {
-    addDocument(name: $name, content: $content, firstName: $first_name, lastName: $last_name, email: $email) { name, content, firstName, lastName, email }
+    addDocument(name: $name, content: $content, firstName: $first_name, lastName: $last_name, email: $email) { id, name, content, firstName, lastName, email }
   }
 `;
 

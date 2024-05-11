@@ -54,6 +54,10 @@ class Mutation:
     async def remove_product(self, id: str) -> None:
         db.delete_product(id)
 
+    @strawberry.field
+    async def add_document(self, name: str, signed: bool, first_name: str, last_name: str, email: str) -> db.Document:
+        return db.create_document(name, signed, first_name, last_name, email)
+
 #### Queries ####
 
 @strawberry.type
@@ -65,6 +69,10 @@ class Query:
     @strawberry.field(permission_classes=[IsAuthenticated])
     def hello(self) -> Message:
         return Message(message="Hej, hej")
+
+    @strawberry.field
+    def document(self, id: str) -> db.Document:
+        return db.get_document(id)
 
 #### Subscriptions ####
 

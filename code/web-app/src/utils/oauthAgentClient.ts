@@ -5,6 +5,7 @@ import config from '../config'
 
 async function oauthAgentFetch(method: string, path: string, body: any, csrf?: string): Promise<any> {
   const url = `${config.oauthAgentBaseUrl}/${path}`;
+  console.log('oauthAgentFetch', url, method, body, csrf);
   const options: AxiosRequestConfig = {
     url,
     method: method as Method,

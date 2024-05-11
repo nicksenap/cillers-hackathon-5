@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "try-out-web3"
+version = "0.1.0"
+description = ""
+authors = ["Nick Song <nick.song@footway.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+web3 = "^6.18.0"
+
+[tool.poetry.group.dev.dependencies]
+web3 = "^6.18.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

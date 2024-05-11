@@ -65,12 +65,13 @@ const Documents: React.FC = () => {
 
   const handleSignDocument = async () => {
     console.log(content);
-    await signDocument({ variables: { 
+    const response = await signDocument({ variables: { 
       document_id: id,
       signed_by_email: email,
       signed_content: content
     } });
-    toast.success('Successfully signed!');
+    if(response.data){toast.success('Successfully signed!');}
+    else {toast.error('Failed to sign!');}
   }
 
   return (

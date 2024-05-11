@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { GET_SIGNATURES, VERIFY_SIGNATURE } from '../graphql/operations';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Signature {
     id: string;
@@ -38,12 +40,16 @@ const Management: React.FC = () => {
         console.log(`Checking integrity for signature ID: ${signature.id}`);
         const res = await verifySignature({ variables: { id: signature.id } });
         if(res.data && res.data.verifySignature.signedChecksum === signature.document.checksum) {
-            alert('Integrity check passed');
+            toast.success('Successfully verified');
+        }
+        else {
+            toast.error('Integrity check failed');
         }
     };
 
     return (
         <div className='container mx-auto'>
+            <ToastContainer />
             <h1 className="text-2xl font-bold mb-4 mt-4">Management</h1>
             
             <div className="container">

@@ -136,13 +136,13 @@ export const REMOVE_TEMPLATE = gql`
 
 export const GET_TEMPLATES = gql`
   query GetTemplates {
-    templates { id, name, template, fieldIds }
+    templates { id, name, template, fields { id, name, type } }
   }
 `;
 
 export const GET_TEMPLATE = gql`
   query GetTemplate($id: String!) {
-    template(id: $id) { id, name, template, fieldIds }
+    template(id: $id) { id, name, template, fields { id, name, type } }
   }
 `;
 

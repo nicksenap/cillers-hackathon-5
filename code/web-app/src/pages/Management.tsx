@@ -51,7 +51,6 @@ const Management: React.FC = () => {
             setSignatures(data.signatures);
         } else if (templateData) {
             setTemplates(templateData.templates);
-            console.log("templateData", templateData);
         }
     }, [data, loading, error, templateData, templateLoading, templateError]);
 

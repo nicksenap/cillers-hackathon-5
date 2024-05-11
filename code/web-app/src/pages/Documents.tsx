@@ -1,142 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_PRODUCTS, ADD_PRODUCT, REMOVE_PRODUCT, PRODUCT_ADDED_SUBSCRIPTION } from '../graphql/operations';
-
-interface Product {
-  id: string;
-  name: string;
-}
-
-interface GetProductsQuery {
-  products: Product[];
-}
+import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { ADD_DOCUMENT } from '../graphql/operations';
 
 interface Document {
   id: string;
   name: string;
-  signed: boolean;
   content: string;
   first_name: string;
   last_name: string;
   email: string;
 }
 
-interface GetDocumentsQuery {
-  documents: Document[];
-}
+// interface GetDocumentsQuery {
+//   documents: Document[];
+// }
 
 const Documents: React.FC = () => {
-  const [newProductText, setNewProductText] = useState('');
-  const [pushToKafka, setPushToKafka] = useState(false);
-  const { data, loading, error, subscribeToMore } = useQuery(GET_PRODUCTS);
-  const [addProduct] = useMutation(ADD_PRODUCT);
-  const [removeProduct] = useMutation(REMOVE_PRODUCT);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  // const { data, loading, error, subscribeToMore } = useQuery(GET_PRODUCTS);
+  const [addDocument] = useMutation(ADD_DOCUMENT);
 
-  useEffect(() => {
-    subscribeToMore({
-      document: PRODUCT_ADDED_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        const newProduct = subscriptionData.data.productAdded;
+  // useEffect(() => {
+  //   subscribeToMore({
+  //     document: PRODUCT_ADDED_SUBSCRIPTION,
+  //     updateQuery: (prev, { subscriptionData }) => {
+  //       if (!subscriptionData.data) return prev;
+  //       const newProduct = subscriptionData.data.productAdded;
 
-        if (prev.products.some((product: Product) => product.id === newProduct.id)) {
-          return prev;
-        }
-        return Object.assign({}, prev, {
-          products: [...prev.products, newProduct]
-        });
-      },
-    });
-  }, [subscribeToMore]);
+  //       if (prev.products.some((product: Product) => product.id === newProduct.id)) {
+  //         return prev;
+  //       }
+  //       return Object.assign({}, prev, {
+  //         products: [...prev.products, newProduct]
+  //       });
+  //     },
+  //   });
+  // }, [subscribeToMore]);
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-base-300">
-      <button className="btn">
-        <span className="loading loading-spinner"></span>
-        Loading...
-      </button>
-    </div>
-  );
-  if (error) return <p>{'Error: ' + error}</p>;
+  // if (loading) return (
+  //   <div className="flex justify-center items-center min-h-screen bg-base-300">
+  //     <button className="btn">
+  //       <span className="loading loading-spinner"></span>
+  //       Loading...
+  //     </button>
+  //   </div>
+  // );
+  // if (error) return <p>{'Error: ' + error}</p>;
 
-  const handleAddProduct = async () => {
-    if (!newProductText.trim()) return;
-    if (pushToKafka) {
-      const response = await fetch('/input/add_product', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newProductText }),
-      });
-      if (response.ok) {
-        setNewProductText('');
-      } else {
-        const errorText = await response.text();
-        console.error('Failed to add product:', errorText);
-      }
-    } else {
-      await addProduct({ variables: { name: newProductText } });
-      setNewProductText('');
+  // const handleAddProduct = async () => {
+  //   if (!newProductText.trim()) return;
+  //   if (pushToKafka) {
+  //     const response = await fetch('/input/add_product', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ name: newProductText }),
+  //     });
+  //     if (response.ok) {
+  //       setNewProductText('');
+  //     } else {
+  //       const errorText = await response.text();
+  //       console.error('Failed to add product:', errorText);
+  //     }
+  //   } else {
+  //     await addProduct({ variables: { name: newProductText } });
+  //     setNewProductText('');
+  //   }
+  // };
+
+  const handleAddDocument = async () => {
+    if (!firstName || !lastName || !email) {
+      // Handle validation or error message here
+      return;
     }
-  };
-
-  const handleRemoveProduct = async (id: string) => {
-    await removeProduct({
-      variables: { id },
-      update(cache) {
-        const existingProducts = cache.readQuery<GetProductsQuery>({ query: GET_PRODUCTS });
-        if (existingProducts?.products) {
-          cache.writeQuery({
-            query: GET_PRODUCTS,
-            data: {
-              products: existingProducts.products.filter(product => product.id !== id),
-            },
-          });
-        }
-      },
-    });
-  };
+    await addDocument({ variables: { 
+      name: 'Test Document',
+      content: 'This is a test document',
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+    } });
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <div className="navbar bg-base-300 text-neutral-content">
         <div className="flex-1">
-          <a href="/" className="p-2 normal-case text-xl">Products</a>
+          <a href="/" className="p-2 normal-case text-xl">Form</a>
         </div>
       </div>
+
 
       <div className="flex flex-grow justify-center items-center bg-neutral">
         <div className="card card-compact w-full max-w-lg bg-base-100 shadow-xl">
           <div className="card-body items-stretch text-center">
-            <h1 className="card-title self-center text-2xl font-bold mb-4">Product List</h1>
+            <h1 className="card-title self-center text-2xl font-bold mb-4">Start a new form</h1>
             <div className="form-control w-full">
-              <div className="join">
+              <div className="form-control">
                 <input
                   type="text"
-                  placeholder="Add new product..."
-                  className="join-item flex-grow input input-bordered input-md input-primary"
-                  value={newProductText}
-                  onChange={(e) => setNewProductText(e.target.value)}
+                  placeholder="First Name"
+                  className="input input-bordered input-md input-primary w-full mb-2"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
-                <button className="join-item btn btn-square btn-md btn-primary" onClick={handleAddProduct}>
-                  Add
+              </div>
+              <div className="form-control">
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className="input input-bordered input-md input-primary w-full mb-2"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+              <div className="form-control">
+                <input
+                  type="text"
+                  placeholder="Email"
+                  className="input input-bordered input-md input-primary w-full mb-2"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-control">
+                <button className="btn btn-primary w-full" onClick={handleAddDocument}>
+                  Start
                 </button>
               </div>
-            </div>
-            <div className="space-y-2 w-full">
-              {data.products.map(({ name, id }: Product) => (
-                <div key={id} className="card card-compact w-full bg-base-200 flex-row items-center justify-between">
-                  <div className="card-body">
-                    <div className="flex justify-between items-center w-full">
-                      <span>{name}</span>
-                      <button className="btn btn-xs btn-circle btn-error" onClick={() => handleRemoveProduct(id)}>
-                        x
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>

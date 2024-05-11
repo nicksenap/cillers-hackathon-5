@@ -55,8 +55,8 @@ class Mutation:
         db.delete_product(id)
 
     @strawberry.field
-    async def add_document(self, name: str, signed: bool, content: str, first_name: str, last_name: str, email: str) -> db.Document:
-        return db.create_document(name, signed, content, first_name, last_name, email)
+    async def add_document(self, name: str, content: str, first_name: str, last_name: str, email: str) -> db.Document:
+        return db.create_document(name, first_name, last_name, email, content)
     
     @strawberry.field
     async def remove_document(self, id: str) -> None:

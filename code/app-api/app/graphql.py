@@ -66,6 +66,21 @@ class Mutation:
     async def sign_document(self, document_id: str, signed_by_email: str, signed_content: str) -> db.Signature:
         return db.create_signature(document_id, signed_by_email, signed_content)
 
+    @strawberry.field
+    async def add_field(self, name: str, type: str) -> db.Field:
+        return db.create_field(name, type)
+    
+    @strawberry.field
+    async def remove_field(self, id: str) -> None:
+        db.delete_field(id)
+    
+    @strawberry.field
+    async def add_template(self, name: str, fields: list[db.Field]) -> db.Template:
+        return db.create_template(name, fields)
+    
+    @strawberry.field
+    async def remove_template(self, id: str) -> None:
+        db.delete_template(id)
 #### Queries ####
 
 @strawberry.type
@@ -102,6 +117,21 @@ class Query:
     def get_signature_by_document(self, document_id: str) -> db.Signature | None:
         return db.get_signature_by_document_id(document_id)
 
+    @strawberry.field
+    def fields(self) -> list[db.Field]:
+        return db.list_fields()
+    
+    @strawberry.field
+    def field(self, id: str) -> db.Field | None:
+        return db.get_field(id)
+    
+    @strawberry.field
+    def templates(self) -> list[db.Template]:
+        return db.list_templates()
+    
+    @strawberry.field
+    def template(self, id: str) -> db.Template | None:
+        return db.get_template(id)
 #### Subscriptions ####
 
 @strawberry.type

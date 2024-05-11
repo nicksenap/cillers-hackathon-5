@@ -27,7 +27,16 @@ class Signature:
     signed_content: str
     signed_checksum: str
     signed_ts: str
-    
+@strawberry.type
+class Field:
+    id: str
+    name: str
+    type: str
+@strawberry.type
+class Template:
+    id: str
+    name: str
+    fields: list[Field]
 
 def create_signature(document_id: str, signed_by_email: str, signed_content: str) -> Signature:
     id = str(uuid.uuid1())
@@ -58,6 +67,24 @@ def create_document(name: str, first_name: str, last_name: str, email: str, cont
                          key=id,
                          data={'name': name, 'content': content, 'checksum': checksum, 'first_name': first_name, 'last_name': last_name, 'email': email}))
     return Document(id=id, name=name, content=content, checksum=checksum, first_name=first_name, last_name=last_name, email=email)
+
+def create_field(name: str, type: str) -> Field:
+    id = str(uuid.uuid1())
+    cb.insert(env.get_couchbase_conf(),
+              cb.DocSpec(bucket=env.get_couchbase_bucket(),
+                         collection='fields',
+                         key=id,
+                         data={'name': name, 'type': type}))
+    return Field(id=id, name=name, type=type)
+
+def create_template(name: str, fields: list[Field]) -> Template:
+    id = str(uuid.uuid1())
+    cb.insert(env.get_couchbase_conf(),
+              cb.DocSpec(bucket=env.get_couchbase_bucket(),
+                         collection='templates',
+                         key=id,
+                         data={'name': name, 'fields': fields}))
+    return Template(id=id, name=name, fields=fields)
 
 def list_documents() -> list[Document]:
     result = cb.exec(
@@ -115,6 +142,48 @@ def delete_document(id: str) -> None:
               cb.DocRef(bucket=env.get_couchbase_bucket(),
                         collection='documents',
                         key=id))
+    
+def get_field(id: str) -> Field | None:
+    if doc := cb.get(env.get_couchbase_conf(),
+                     cb.DocRef(bucket=env.get_couchbase_bucket(),
+                               collection='fields',
+                               key=id)):
+        doc = doc.value
+        return Field(id=id, name=doc['name'], type=doc['type'])
+
+def delete_field(id: str) -> None:
+    cb.remove(env.get_couchbase_conf(),
+              cb.DocRef(bucket=env.get_couchbase_bucket(),
+                        collection='fields',
+                        key=id))
+    
+def list_fields() -> list[Field]:
+    result = cb.exec(
+        env.get_couchbase_conf(),
+        f"SELECT name, type, META().id FROM {env.get_couchbase_bucket()}._default.fields"
+    )
+    return [Field(**r) for r in result]
+
+def get_template(id: str) -> Template | None:
+    if doc := cb.get(env.get_couchbase_conf(),
+                     cb.DocRef(bucket=env.get_couchbase_bucket(),
+                               collection='templates',
+                               key=id)):
+        doc = doc.value
+        return Template(id=id, name=doc['name'], fields=doc['fields'])
+
+def delete_template(id: str) -> None:
+    cb.remove(env.get_couchbase_conf(),
+              cb.DocRef(bucket=env.get_couchbase_bucket(),
+                        collection='templates',
+                        key=id))
+
+def list_templates() -> list[Template]:
+    result = cb.exec(
+        env.get_couchbase_conf(),
+        f"SELECT name, fields, META().id FROM {env.get_couchbase_bucket()}._default.templates"
+    )
+    return [Template(**r) for r in result]
 
 def get_product(id: str) -> Product | None:
     if doc := cb.get(env.get_couchbase_conf(),

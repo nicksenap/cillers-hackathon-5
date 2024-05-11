@@ -116,3 +116,27 @@ export const PRODUCT_ADDED_SUBSCRIPTION = gql`
     productAdded { name, id }
   }
 `;
+
+export const ADD_FIELD = gql`
+  mutation AddField($name: String!) {
+    addField(name: $name) { name, type, id }
+  }
+`;
+
+export const REMOVE_FIELD = gql`
+  mutation RemoveField($id: String!) {
+    removeField(id: $id)
+  }
+`;
+export const GET_FIELDS = gql`
+  query GetFields {
+    fields { name, type, id }
+  }
+`;
+
+export const ADD_TEMPLATE = gql`
+  mutation AddTemplate($fields: [FieldInput]) {
+    addTemplate(fields: $fields) { id, name, fields { name, type, id } }
+  }
+`;
+

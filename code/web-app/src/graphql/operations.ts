@@ -32,13 +32,13 @@ export const GET_DOCUMENT = gql`
 
 export const GET_DOCUMENTS = gql`
   query GetDocuments {
-    documents { name, id, content, signed, first_name, last_name, email }
+    documents { name, id, content, first_name, last_name, email }
   }
 `;
 
 export const ADD_DOCUMENT = gql`
-  mutation AddDocument($id: String!) {
-    addDocument(id: $id) { name, id, content, signed, first_name, last_name, email }
+  mutation AddDocument($name: String!, $first_name: String!, $last_name: String!, $email: String!, $content: String!) {
+    addDocument(name: $name, first_name: $first_name, last_name: $last_name, email: $email, content: $content) { name, id, content, first_name, last_name, email }
   }
 `;
 

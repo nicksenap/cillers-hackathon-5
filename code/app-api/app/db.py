@@ -17,8 +17,23 @@ class Document:
     last_name: str
     email: str
     checksum: str
-    signed: bool
 
+@strawberry.type
+class Signature:
+    id: str
+    document: Document
+    signed_checksum: str
+    signed_ts: str
+    
+
+def create_signature(document_id: str, signed_checksum: str, signed_ts: str) -> Signature:
+    id = str(uuid.uuid1())
+    cb.insert(env.get_couchbase_conf(),
+              cb.DocSpec(bucket=env.get_couchbase_bucket(),
+                         collection='signatures',
+                         key=id,
+                         data={'document_id': document_id, 'signed_checksum': signed_checksum, 'signed_ts': signed_ts}))
+    return Signature(id=id, document=get_document(document_id), signed_checksum=signed_checksum, signed_ts=signed_ts)
 
 def create_product(name: str) -> Product:
     id = str(uuid.uuid1())
@@ -29,22 +44,22 @@ def create_product(name: str) -> Product:
                          data={'name': name}))
     return Product(id=id, name=name)
 
-def create_document(name: str, signed: bool, first_name: str, last_name: str, email: str, content: str) -> Document:
+def create_document(name: str, first_name: str, last_name: str, email: str, content: str) -> Document:
     id = str(uuid.uuid1())
     checksum = hashlib.sha256(content.encode()).hexdigest()
     cb.insert(env.get_couchbase_conf(),
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='documents',
                          key=id,
-                         data={'name': name, 'content': content, 'signed': signed, 'checksum': checksum, 'first_name': first_name, 'last_name': last_name, 'email': email}))
-    return Document(id=id, name=name, content=content, signed=signed, checksum=checksum, first_name=first_name, last_name=last_name, email=email)
+                         data={'name': name, 'content': content, 'checksum': checksum, 'first_name': first_name, 'last_name': last_name, 'email': email}))
+    return Document(id=id, name=name, content=content, checksum=checksum, first_name=first_name, last_name=last_name, email=email)
 
 def list_documents() -> list[Document]:
     result = cb.exec(
         env.get_couchbase_conf(),
-        f"SELECT name, content, signed, checksum, first_name, last_name, email, META().id FROM {env.get_couchbase_bucket()}._default.documents"
+        f"SELECT name, content, checksum, first_name, last_name, email, META().id FROM {env.get_couchbase_bucket()}._default.documents"
     )
-    return [Document(id=r['id'], name=r['name'], content=r['content'], signed=r['signed'], checksum=r['checksum'], first_name=r['first_name'], last_name=r['last_name'], email=r['email']) for r in result]
+    return [Document(id=r['id'], name=r['name'], content=r['content'], checksum=r['checksum'], first_name=r['first_name'], last_name=r['last_name'], email=r['email']) for r in result]
 
 def get_document(id: str) -> Document | None:
     if doc := cb.get(env.get_couchbase_conf(),
@@ -52,7 +67,7 @@ def get_document(id: str) -> Document | None:
                                collection='documents',
                                key=id)):
         doc = doc.value
-        return Document(id=id, name=doc['name'], content=doc['content'], signed=doc['signed'], checksum=doc['checksum'], first_name=doc['first_name'], last_name=doc['last_name'], email=doc['email'])
+        return Document(id=id, name=doc['name'], content=doc['content'], checksum=doc['checksum'], first_name=doc['first_name'], last_name=doc['last_name'], email=doc['email'])
 
 def delete_document(id: str) -> None:
     cb.remove(env.get_couchbase_conf(),

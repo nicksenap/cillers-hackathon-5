@@ -10,6 +10,7 @@ class Product:
 @strawberry.type
 class Document:
     id: str
+    name: str
     first_name: str
     last_name: str
     email: str

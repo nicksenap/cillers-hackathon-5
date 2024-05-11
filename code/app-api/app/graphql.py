@@ -63,8 +63,8 @@ class Mutation:
         db.delete_document(id)
     
     @strawberry.field
-    async def sign_document(self, document_id: str, signed_by_email: str, signed_content: str, signed_ts: str) -> db.Signature:
-        return db.create_signature(document_id, signed_by_email, signed_content, signed_ts)
+    async def sign_document(self, document_id: str, signed_by_email: str, signed_content: str) -> db.Signature:
+        return db.create_signature(document_id, signed_by_email, signed_content)
 
 #### Queries ####
 

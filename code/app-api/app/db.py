@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import uuid
 import strawberry
@@ -28,15 +29,16 @@ class Signature:
     signed_ts: str
     
 
-def create_signature(document_id: str, signed_by_email: str, signed_content: str, signed_ts: str) -> Signature:
+def create_signature(document_id: str, signed_by_email: str, signed_content: str) -> Signature:
     id = str(uuid.uuid1())
     checksum = hashlib.sha256(signed_content.encode()).hexdigest()
+    ts = datetime.datetime.now().isoformat()
     cb.insert(env.get_couchbase_conf(),
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='signatures',
                          key=id,
-                         data={'document_id': document_id, 'signed_by_email': signed_by_email, 'signed_checksum': checksum, 'signed_ts': signed_ts}))
-    return Signature(id=id, document=get_document(document_id), signed_by_email=signed_by_email, signed_checksum=checksum, signed_ts=signed_ts)
+                         data={'document_id': document_id, 'signed_by_email': signed_by_email, 'signed_checksum': checksum, 'signed_ts': ts}))
+    return Signature(id=id, document=get_document(document_id), signed_by_email=signed_by_email, signed_checksum=checksum, signed_ts=ts)
 
 def create_product(name: str) -> Product:
     id = str(uuid.uuid1())

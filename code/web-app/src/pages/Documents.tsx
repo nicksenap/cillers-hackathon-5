@@ -3,6 +3,8 @@ import { useMutation } from '@apollo/client';
 import { ADD_DOCUMENT, SIGN_DOCUMENT } from '../graphql/operations';
 import { renderDocumentAsStaticHtml } from '../utils/staticRenderHandler';
 import DocumentRendered from '../templates/DocumentRendered';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Documents: React.FC = () => {
@@ -13,7 +15,7 @@ const Documents: React.FC = () => {
   const [id, setId] = useState('');
   const [content, setContent] = useState('');
   const [addDocument] = useMutation(ADD_DOCUMENT);
-  const [sighDocument] = useMutation(SIGN_DOCUMENT);
+  const [signDocument] = useMutation(SIGN_DOCUMENT);
   const [showPreview, setShowPreview] = useState(false);
 
   // const handleAddProduct = async () => {
@@ -63,16 +65,18 @@ const Documents: React.FC = () => {
 
   const handleSignDocument = async () => {
     console.log(content);
-    await sighDocument({ variables: { 
+    await signDocument({ variables: { 
       document_id: id,
       signed_by_email: email,
       signed_content: content
     } });
-    console.log("Signed");
+    toast.success('Successfully signed!');
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ToastContainer />
+      
       <div className="navbar bg-base-300 text-neutral-content">
         <div className="flex-1">
           <a href="/" className="p-2 normal-case text-xl">Form</a>

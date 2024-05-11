@@ -27,11 +27,13 @@ class Signature:
     signed_content: str
     signed_checksum: str
     signed_ts: str
+
 @strawberry.type
 class Field:
     id: str
     name: str
     type: str
+
 @strawberry.type
 class Template:
     id: str
@@ -77,14 +79,14 @@ def create_field(name: str, type: str) -> Field:
                          data={'name': name, 'type': type}))
     return Field(id=id, name=name, type=type)
 
-def create_template(name: str, fields: list[Field]) -> Template:
+def create_template(name: str, field_ids: list[str]) -> Template:
     id = str(uuid.uuid1())
     cb.insert(env.get_couchbase_conf(),
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='templates',
                          key=id,
-                         data={'name': name, 'fields': fields}))
-    return Template(id=id, name=name, fields=fields)
+                         data={'name': name, 'field_ids': field_ids}))
+    return Template(id=id, name=name, fields=[get_field(id) for id in field_ids])
 
 def list_documents() -> list[Document]:
     result = cb.exec(

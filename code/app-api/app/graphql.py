@@ -75,8 +75,8 @@ class Mutation:
         db.delete_field(id)
     
     @strawberry.field
-    async def add_template(self, name: str, fields: list[db.Field]) -> db.Template:
-        return db.create_template(name, fields)
+    async def add_template(self, name: str, field_ids: list[str]) -> db.Template:
+        return db.create_template(name, field_ids)
     
     @strawberry.field
     async def remove_template(self, id: str) -> None:

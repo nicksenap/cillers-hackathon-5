@@ -61,6 +61,10 @@ class Mutation:
     @strawberry.field
     async def remove_document(self, id: str) -> None:
         db.delete_document(id)
+    
+    @strawberry.field
+    async def sign_document(self, document_id: str, signed_by_email: str, signed_content: str, signed_ts: str) -> db.Signature:
+        return db.create_signature(document_id, signed_by_email, signed_content, signed_ts)
 
 #### Queries ####
 
@@ -81,6 +85,22 @@ class Query:
     @strawberry.field
     def document(self, id: str) -> db.Document | None:
         return db.get_document(id)
+    
+    @strawberry.field
+    def signatures(self) -> list[db.Signature]:
+        return db.list_signatures()
+    
+    @strawberry.field
+    def signature(self, id: str) -> db.Signature | None:
+        return db.get_signature(id)
+    
+    @strawberry.field
+    def verify_signature(self, id: str) -> db.Signature | None:
+        return db.verify_signature(id)
+    
+    @strawberry.field
+    def get_signature_by_document(self, document_id: str) -> db.Signature | None:
+        return db.get_signature_by_document_id(document_id)
 
 #### Subscriptions ####
 

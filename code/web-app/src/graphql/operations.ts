@@ -48,6 +48,69 @@ export const REMOVE_DOCUMENT = gql`
   }
 `;
 
+export const SIGN_DOCUMENT = gql`
+  mutation SignDocument($document_id: String!, $signed_by_email: String!, $signed_content: String!, $signed_ts: String!) {
+    signDocument(document_id: $document_id, signed_by_email: $signed_by_email, signed_content: $signed_content, signed_ts: $signed_ts) {
+      id
+      document {
+        id
+        name
+        content
+        firstName
+        lastName
+        email
+        checksum
+      }
+      signed_by_email
+      signed_content
+      signed_checksum
+      signed_ts
+    }
+  }
+`;
+
+export const GET_SIGNATURES = gql`
+  query GetSignatures {
+    signatures {
+      id
+      document {
+        id
+        name
+        content
+        firstName
+        lastName
+        email
+        checksum
+      }
+      signed_by_email
+      signed_content
+      signed_checksum
+      signed_ts
+    }
+  }
+`;
+
+export const VERIFY_SIGNATURE = gql`
+  query VerifySignature($signature_id: String!) {
+    verifySignature(signature_id: $signature_id) {
+      id
+      document {
+        id
+        name
+        content
+        firstName
+        lastName
+        email
+        checksum
+      }
+      signed_by_email
+      signed_content
+      signed_checksum
+      signed_ts
+    }
+  }
+`;
+
 export const PRODUCT_ADDED_SUBSCRIPTION = gql`
   subscription OnProductAdded {
     productAdded { name, id }

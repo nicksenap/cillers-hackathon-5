@@ -35,11 +35,19 @@ def create_document(name: str, signed: bool, first_name: str, last_name: str, em
                          data={'name': name, 'signed': signed, 'first_name': first_name, 'last_name': last_name, 'email': email}))
     return Document(id=id, name=name, signed=signed, first_name=first_name, last_name=last_name, email=email)
 
+def list_documents() -> list[Document]:
+    result = cb.exec(
+        env.get_couchbase_conf(),
+        f"SELECT name, signed, first_name, last_name, email, META().id FROM {env.get_couchbase_bucket()}._default.documents"
+    )
+    return [Document(id=r['id'], name=r['name'], signed=r['signed'], first_name=r['first_name'], last_name=r['last_name'], email=r['email']) for r in result]
+
 def get_document(id: str) -> Document | None:
     if doc := cb.get(env.get_couchbase_conf(),
                      cb.DocRef(bucket=env.get_couchbase_bucket(),
                                collection='documents',
                                key=id)):
+        doc = doc.value
         return Document(id=id, name=doc['name'], signed=doc['signed'], first_name=doc['first_name'], last_name=doc['last_name'], email=doc['email'])
 
 #

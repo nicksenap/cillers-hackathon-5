@@ -72,7 +72,11 @@ class Query:
         return Message(message="Hej, hej")
 
     @strawberry.field
-    def document(self, id: str) -> db.Document:
+    def documents(self) -> list[db.Document]:
+        return db.list_documents()
+    
+    @strawberry.field
+    def document(self, id: str) -> db.Document | None:
         return db.get_document(id)
 
 #### Subscriptions ####

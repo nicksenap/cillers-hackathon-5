@@ -24,6 +24,24 @@ export const REMOVE_PRODUCT = gql`
   }
 `;
 
+export const GET_DOCUMENTS = gql`
+  query GetDocuments {
+    documents { name, id, signed, first_name, last_name, email }
+  }
+`;
+
+export const ADD_DOCUMENT = gql`
+  mutation AddDocument($id: String!) {
+    addDocument(id: $id) { name, id, signed, first_name, last_name, email }
+  }
+`;
+
+export const REMOVE_DOCUMENT = gql`
+  mutation RemoveDocument($id: String!) {
+    removeDocument(id: $id)
+  }
+`;
+
 export const PRODUCT_ADDED_SUBSCRIPTION = gql`
   subscription OnProductAdded {
     productAdded { name, id }

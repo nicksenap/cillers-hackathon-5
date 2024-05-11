@@ -1,7 +1,7 @@
 import React from 'react'; 
 import { ApolloProvider } from '@apollo/client';
 import createAuthenticatedClient from '../apolloClient';
-import Documents from './Products';
+import Documents from './Documents';
 
 interface AuthenticatedProps {
   userInfo: Record<string, any>; 

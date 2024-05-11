@@ -58,6 +58,10 @@ class Mutation:
     async def add_document(self, name: str, signed: bool, first_name: str, last_name: str, email: str) -> db.Document:
         print(f"Adding document: {name=}, {signed=}, {first_name=}, {last_name=}, {email=}")
         return db.create_document(name, signed, first_name, last_name, email)
+    
+    @strawberry.field
+    async def remove_document(self, id: str) -> None:
+        db.delete_document(id)
 
 #### Queries ####
 

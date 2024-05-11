@@ -48,12 +48,19 @@ const Management: React.FC = () => {
     };
 
     return (
-        <div className='container mx-auto'>
+        <div className="min-h-screen flex flex-col">
             <ToastContainer />
-            <h1 className="text-2xl font-bold mb-4 mt-4">Management</h1>
+            <div className="navbar bg-base-300 text-neutral-content">
+                <div className="flex-1">
+                <a href="/" className="p-2 normal-case text-xl">Management</a>
+                </div>
+            </div>
+
+        <div className='container mx-auto'>
+
             
-            <div className="container">
-                <h1 className="text-2xl font-bold mb-4">Signatures</h1>
+            <div className="container mt-4">
+                <h2 className="text-2xl font-bold mb-4">Signatures</h2>
                 {loading ? (
                     <p>Loading signatures...</p>
                 ) : error ? (
@@ -87,7 +94,30 @@ const Management: React.FC = () => {
                     </table>
                 )}
             </div>
+
+            <div className="container mt-4">
+                <h2 className="text-2xl font-bold mb-4">Contract Template Management</h2>
+                {loading ? (
+                    <p>Loading template...</p>
+                ) : error ? (
+                    <p>Error fetching template: {error.message}</p>
+                ) : (
+                    <div>tbh</div>
+                )}
+            </div>
+
+            <div className="container mt-4">
+                <h2 className="text-2xl font-bold mb-4">Field Management</h2>
+                {loading ? (
+                    <p>Loading fields...</p>
+                ) : error ? (
+                    <p>Error fetching fields: {error.message}</p>
+                ) : (
+                    <div>tbh</div>
+                )}
+            </div>
+
         </div>
-    );
+    </div>);
 };
 export default Management;

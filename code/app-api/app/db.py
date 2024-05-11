@@ -79,6 +79,16 @@ def get_signature(id: str) -> Signature | None:
         doc = doc.value
         return Signature(id=id, document=get_document(doc['document_id']), signed_by_email=doc['signed_by_email'], signed_content=doc['signed_content'], signed_checksum=doc['signed_checksum'], signed_ts=doc['signed_ts'])
 
+def get_signature_by_document_id(document_id: str) -> Signature | None:
+    result = cb.exec(
+        env.get_couchbase_conf(),
+        f"SELECT META().id FROM {env.get_couchbase_bucket()}._default.signatures WHERE document_id = $1",
+        document_id
+    )
+    if result:
+        return get_signature(result[0]['id'])
+    return None
+
 def verify_signature(id: str) -> Signature | None:
     if signature_doc := cb.get(env.get_couchbase_conf(),
                                cb.DocRef(bucket=env.get_couchbase_bucket(),

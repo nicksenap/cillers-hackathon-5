@@ -97,6 +97,10 @@ class Query:
     @strawberry.field
     def verify_signature(self, id: str) -> db.Signature | None:
         return db.verify_signature(id)
+    
+    @strawberry.field
+    def get_signature_by_document(self, document_id: str) -> db.Signature | None:
+        return db.get_signature_by_document_id(document_id)
 
 #### Subscriptions ####
 

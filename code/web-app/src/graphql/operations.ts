@@ -24,15 +24,21 @@ export const REMOVE_PRODUCT = gql`
   }
 `;
 
+export const GET_DOCUMENT = gql`
+  query GetDocument($id: String!) {
+    document(id: $id) { name, id, content, signed, first_name, last_name, email }
+  }
+`;
+
 export const GET_DOCUMENTS = gql`
   query GetDocuments {
-    documents { name, id, signed, first_name, last_name, email }
+    documents { name, id, content, signed, first_name, last_name, email }
   }
 `;
 
 export const ADD_DOCUMENT = gql`
   mutation AddDocument($id: String!) {
-    addDocument(id: $id) { name, id, signed, first_name, last_name, email }
+    addDocument(id: $id) { name, id, content, signed, first_name, last_name, email }
   }
 `;
 

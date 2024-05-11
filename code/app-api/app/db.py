@@ -11,6 +11,7 @@ class Product:
 class Document:
     id: str
     name: str
+    content: str
     first_name: str
     last_name: str
     email: str
@@ -26,21 +27,21 @@ def create_product(name: str) -> Product:
                          data={'name': name}))
     return Product(id=id, name=name)
 
-def create_document(name: str, signed: bool, first_name: str, last_name: str, email: str) -> Document:
+def create_document(name: str, signed: bool, first_name: str, last_name: str, email: str, content: str) -> Document:
     id = str(uuid.uuid1())
     cb.insert(env.get_couchbase_conf(),
               cb.DocSpec(bucket=env.get_couchbase_bucket(),
                          collection='documents',
                          key=id,
-                         data={'name': name, 'signed': signed, 'first_name': first_name, 'last_name': last_name, 'email': email}))
-    return Document(id=id, name=name, signed=signed, first_name=first_name, last_name=last_name, email=email)
+                         data={'name': name, 'content': content, 'signed': signed, 'first_name': first_name, 'last_name': last_name, 'email': email}))
+    return Document(id=id, name=name, content=content, signed=signed, first_name=first_name, last_name=last_name, email=email)
 
 def list_documents() -> list[Document]:
     result = cb.exec(
         env.get_couchbase_conf(),
-        f"SELECT name, signed, first_name, last_name, email, META().id FROM {env.get_couchbase_bucket()}._default.documents"
+        f"SELECT name, content, signed, first_name, last_name, email, META().id FROM {env.get_couchbase_bucket()}._default.documents"
     )
-    return [Document(id=r['id'], name=r['name'], signed=r['signed'], first_name=r['first_name'], last_name=r['last_name'], email=r['email']) for r in result]
+    return [Document(id=r['id'], name=r['name'], content=r['content'], signed=r['signed'], first_name=r['first_name'], last_name=r['last_name'], email=r['email']) for r in result]
 
 def get_document(id: str) -> Document | None:
     if doc := cb.get(env.get_couchbase_conf(),

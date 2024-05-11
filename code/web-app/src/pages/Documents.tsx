@@ -15,6 +15,7 @@ interface Document {
   id: string;
   name: string;
   signed: boolean;
+  content: string;
   first_name: string;
   last_name: string;
   email: string;

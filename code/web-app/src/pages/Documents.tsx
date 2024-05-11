@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { ADD_DOCUMENT } from '../graphql/operations';
+import { ADD_DOCUMENT, SIGN_DOCUMENT } from '../graphql/operations';
 import { renderDocumentAsStaticHtml } from '../utils/staticRenderHandler';
 import DocumentRendered from '../templates/DocumentRendered';
 
@@ -10,7 +10,10 @@ const Documents: React.FC = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [id, setId] = useState('');
+  const [content, setContent] = useState('');
   const [addDocument] = useMutation(ADD_DOCUMENT);
+  const [sighDocument] = useMutation(SIGN_DOCUMENT);
   const [showPreview, setShowPreview] = useState(false);
 
   // const handleAddProduct = async () => {
@@ -40,20 +43,32 @@ const Documents: React.FC = () => {
       // Handle validation or error message here
       return;
     }
-    await addDocument({ variables: { 
+    const response = await addDocument({ variables: { 
       name: name,
       first_name: firstName,
       last_name: lastName,
       email: email,
       content: staticHtml
     } });
-
+    console.log(response);
+    setId(response.data.addDocument.id);
+    setContent(staticHtml);
     setShowPreview(true);
   }
 
   const renderDocument = async () => {
     const staticHtml = renderDocumentAsStaticHtml({ name, first_name: firstName, last_name: lastName, email });
     await handleAddDocument(staticHtml);
+  }
+
+  const handleSignDocument = async () => {
+    console.log(content);
+    await sighDocument({ variables: { 
+      document_id: id,
+      signed_by_email: email,
+      signed_content: content
+    } });
+    console.log("Signed");
   }
 
   return (
@@ -120,7 +135,7 @@ const Documents: React.FC = () => {
                     email={email}
                   />
                 </div>
-                <button className="btn btn-primary w-full">
+                <button className="btn btn-primary w-full" onClick={handleSignDocument}>
                   Sign
                 </button>
               </div>

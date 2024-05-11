@@ -49,8 +49,8 @@ export const REMOVE_DOCUMENT = gql`
 `;
 
 export const SIGN_DOCUMENT = gql`
-  mutation SignDocument($document_id: String!, $signed_by_email: String!, $signed_content: String!, $signed_ts: String!) {
-    signDocument(document_id: $document_id, signed_by_email: $signed_by_email, signed_content: $signed_content, signed_ts: $signed_ts) {
+  mutation SignDocument($document_id: String!, $signed_by_email: String!, $signed_content: String!) {
+    signDocument(documentId: $document_id, signedByEmail: $signed_by_email, signedContent: $signed_content) {
       id
       document {
         id
@@ -61,10 +61,10 @@ export const SIGN_DOCUMENT = gql`
         email
         checksum
       }
-      signed_by_email
-      signed_content
-      signed_checksum
-      signed_ts
+      signedByEmail
+      signedContent
+      signedChecksum
+      signedTs
     }
   }
 `;

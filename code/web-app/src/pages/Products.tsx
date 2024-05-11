@@ -11,7 +11,20 @@ interface GetProductsQuery {
   products: Product[];
 }
 
-const Products: React.FC = () => {
+interface Document {
+  id: string;
+  name: string;
+  signed: boolean;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+interface GetDocumentsQuery {
+  documents: Document[];
+}
+
+const Documents: React.FC = () => {
   const [newProductText, setNewProductText] = useState('');
   const [pushToKafka, setPushToKafka] = useState(false);
   const { data, loading, error, subscribeToMore } = useQuery(GET_PRODUCTS);
@@ -131,4 +144,4 @@ const Products: React.FC = () => {
   );
 };
 
-export default Products;
+export default Documents;
